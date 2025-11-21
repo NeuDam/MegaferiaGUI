@@ -1,0 +1,40 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package core.models;
+
+import java.util.ArrayList;
+
+/**
+ *
+ * @author edangulo
+ */
+public class PrintedBook extends Book {
+
+    private int pages;
+    private int copies;
+
+    public PrintedBook(String title, ArrayList<Author> authors, String isbn, String genre, String format, double value,
+            Publisher publisher, int pages, int copies) {
+        super(title, authors, isbn, genre, format, value, publisher);
+        this.pages = pages;
+        this.copies = copies;
+    }
+
+    public int getPages() {
+        return pages;
+    }
+
+    public int getCopies() {
+        return copies;
+    }
+
+    @Override
+    public PrintedBook clone() throws CloneNotSupportedException {
+        ArrayList<Author> authorsCopy = new ArrayList<>(this.authors);
+        return new PrintedBook(this.title, authorsCopy, this.isbn, this.genre, this.format, this.value, this.publisher,
+                this.pages, this.copies);
+    }
+
+}
