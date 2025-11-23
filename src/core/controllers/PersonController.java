@@ -10,6 +10,8 @@ import core.models.*;
 import core.models.storage.IPersonStorage;
 import core.models.storage.Storage;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  *
@@ -215,6 +217,13 @@ public class PersonController {
           authorsMax.add(author);
         }
       }
+
+      Collections.sort(authorsMax, new Comparator<Author>() {
+        @Override
+        public int compare(Author a1, Author a2) {
+          return Long.compare(a1.getId(), a2.getId());
+        }
+      });
 
       ArrayList<Author> authorsMaxCopy = new ArrayList<>();
       for (Author author : authorsMax) {

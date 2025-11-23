@@ -12,6 +12,8 @@ import core.models.storage.IPersonStorage;
 import core.models.storage.IPublisherStorage;
 import core.models.storage.Storage;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
@@ -318,6 +320,13 @@ public class BookController {
         }
       }
 
+      Collections.sort(authorBooks, new Comparator<Book>() {
+        @Override
+        public int compare(Book b1, Book b2) {
+          return b1.getIsbn().compareTo(b2.getIsbn());
+        }
+      });
+
       return new Response("Books by author retrieved successfully", Status.OK, authorBooks);
     } catch (Exception ex) {
       return new Response("Unexpected error", Status.INTERNAL_SERVER_ERROR);
@@ -343,6 +352,13 @@ public class BookController {
           }
         }
       }
+
+      Collections.sort(formatBooks, new Comparator<Book>() {
+        @Override
+        public int compare(Book b1, Book b2) {
+          return b1.getIsbn().compareTo(b2.getIsbn());
+        }
+      });
 
       return new Response("Books by format retrieved successfully", Status.OK, formatBooks);
     } catch (Exception ex) {
@@ -378,6 +394,13 @@ public class BookController {
           }
         }
       }
+
+      Collections.sort(typeBooks, new Comparator<Book>() {
+        @Override
+        public int compare(Book b1, Book b2) {
+          return b1.getIsbn().compareTo(b2.getIsbn());
+        }
+      });
 
       return new Response("Books by type retrieved successfully", Status.OK, typeBooks);
     } catch (Exception ex) {
