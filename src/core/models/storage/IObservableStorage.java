@@ -8,6 +8,8 @@ package core.models.storage;
  *
  * @author edangulo
  */
-public interface IStorage extends IStandStorage, IPersonStorage, IPublisherStorage, IBookStorage, IObservableStorage {
+public interface IObservableStorage {
+  void addObserver(StorageObserver observer);
 
+  void removeObserver(StorageObserver observer);
 }

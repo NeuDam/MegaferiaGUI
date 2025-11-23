@@ -7,6 +7,7 @@ package core.controllers;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.models.Stand;
+import core.models.storage.IStandStorage;
 import core.models.storage.Storage;
 import java.util.ArrayList;
 
@@ -42,7 +43,7 @@ public class StandController {
         return new Response("Price must be numeric", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
+      IStandStorage storage = Storage.getInstance();
       if (!storage.addStand(new Stand(idLong, priceDouble))) {
         return new Response("A stand with that id already exists", Status.BAD_REQUEST);
       }
@@ -54,7 +55,7 @@ public class StandController {
 
   public static Response getAllStands() {
     try {
-      Storage storage = Storage.getInstance();
+      IStandStorage storage = Storage.getInstance();
       ArrayList<Stand> stands = storage.getAllStands();
 
       ArrayList<Stand> standsCopy = new ArrayList<>();

@@ -1663,7 +1663,8 @@ public class MegaferiaFrame extends javax.swing.JFrame implements StorageObserve
             authorIds.add(Long.parseLong(authorData.split(" - ")[0]));
         }
 
-        String publisherNit = publisherData.split(" ")[1].replace("(", "").replace(")", "");
+        String publisherNit = publisherData.substring(publisherData.lastIndexOf("(") + 1,
+                publisherData.lastIndexOf(")"));
 
         Response response = null;
 
@@ -1731,7 +1732,8 @@ public class MegaferiaFrame extends javax.swing.JFrame implements StorageObserve
 
         ArrayList<String> publisherNits = new ArrayList<>();
         for (String publisherData : publishersData) {
-            String publisherNit = publisherData.split(" ")[1].replace("(", "").replace(")", "");
+            String publisherNit = publisherData.substring(publisherData.lastIndexOf("(") + 1,
+                    publisherData.lastIndexOf(")"));
             publisherNits.add(publisherNit);
         }
 

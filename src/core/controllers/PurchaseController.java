@@ -8,6 +8,8 @@ import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.models.Publisher;
 import core.models.Stand;
+import core.models.storage.IPublisherStorage;
+import core.models.storage.IStandStorage;
 import core.models.storage.Storage;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,19 +40,20 @@ public class PurchaseController {
         return new Response("Publishers must not be repeated", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
+      IStandStorage standStorage = Storage.getInstance();
       ArrayList<Stand> stands = new ArrayList<>();
       for (Long standId : standIds) {
-        Stand stand = storage.getStand(standId);
+        Stand stand = standStorage.getStand(standId);
         if (stand == null) {
           return new Response("Stand with id " + standId + " not found", Status.NOT_FOUND);
         }
         stands.add(stand);
       }
 
+      IPublisherStorage publisherStorage = Storage.getInstance();
       ArrayList<Publisher> publishers = new ArrayList<>();
       for (String nit : publisherNits) {
-        Publisher publisher = storage.getPublisher(nit.trim());
+        Publisher publisher = publisherStorage.getPublisher(nit.trim());
         if (publisher == null) {
           return new Response("Publisher with NIT " + nit + " not found", Status.NOT_FOUND);
         }

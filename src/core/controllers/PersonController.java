@@ -7,6 +7,7 @@ package core.controllers;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.models.*;
+import core.models.storage.IPersonStorage;
 import core.models.storage.Storage;
 import java.util.ArrayList;
 
@@ -40,7 +41,7 @@ public class PersonController {
         return new Response("Lastname must not be empty", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
+      IPersonStorage storage = Storage.getInstance();
       if (!storage.addAuthor(new Author(idLong, firstname, lastname))) {
         return new Response("A person with that id already exists", Status.BAD_REQUEST);
       }
@@ -74,7 +75,7 @@ public class PersonController {
         return new Response("Lastname must not be empty", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
+      IPersonStorage storage = Storage.getInstance();
       if (!storage.addManager(new Manager(idLong, firstname, lastname))) {
         return new Response("A person with that id already exists", Status.BAD_REQUEST);
       }
@@ -108,7 +109,7 @@ public class PersonController {
         return new Response("Lastname must not be empty", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
+      IPersonStorage storage = Storage.getInstance();
       if (!storage.addNarrator(new Narrator(idLong, firstname, lastname))) {
         return new Response("A person with that id already exists", Status.BAD_REQUEST);
       }
@@ -120,7 +121,7 @@ public class PersonController {
 
   public static Response getAllPersons() {
     try {
-      Storage storage = Storage.getInstance();
+      IPersonStorage storage = Storage.getInstance();
       ArrayList<Person> persons = storage.getAllPersons();
 
       ArrayList<Person> personsCopy = new ArrayList<>();
@@ -140,7 +141,7 @@ public class PersonController {
 
   public static Response getAllAuthors() {
     try {
-      Storage storage = Storage.getInstance();
+      IPersonStorage storage = Storage.getInstance();
       ArrayList<Author> authors = storage.getAllAuthors();
 
       ArrayList<Author> authorsCopy = new ArrayList<>();
@@ -160,7 +161,7 @@ public class PersonController {
 
   public static Response getAllManagers() {
     try {
-      Storage storage = Storage.getInstance();
+      IPersonStorage storage = Storage.getInstance();
       ArrayList<Manager> managers = storage.getAllManagers();
 
       ArrayList<Manager> managersCopy = new ArrayList<>();
@@ -180,7 +181,7 @@ public class PersonController {
 
   public static Response getAllNarrators() {
     try {
-      Storage storage = Storage.getInstance();
+      IPersonStorage storage = Storage.getInstance();
       ArrayList<Narrator> narrators = storage.getAllNarrators();
 
       ArrayList<Narrator> narratorsCopy = new ArrayList<>();
@@ -200,7 +201,7 @@ public class PersonController {
 
   public static Response getAuthorsWithMostPublishers() {
     try {
-      Storage storage = Storage.getInstance();
+      IPersonStorage storage = Storage.getInstance();
       ArrayList<Author> authors = storage.getAllAuthors();
 
       ArrayList<Author> authorsMax = new ArrayList<>();

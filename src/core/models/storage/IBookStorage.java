@@ -4,10 +4,17 @@
  */
 package core.models.storage;
 
+import core.models.Book;
+import java.util.ArrayList;
+
 /**
  *
  * @author edangulo
  */
-public interface IStorage extends IStandStorage, IPersonStorage, IPublisherStorage, IBookStorage, IObservableStorage {
+public interface IBookStorage {
+  boolean addBook(Book book);
 
+  Book getBook(String isbn);
+
+  ArrayList<Book> getAllBooks();
 }

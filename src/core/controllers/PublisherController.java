@@ -8,6 +8,8 @@ import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.models.Manager;
 import core.models.Publisher;
+import core.models.storage.IPersonStorage;
+import core.models.storage.IPublisherStorage;
 import core.models.storage.Storage;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -41,13 +43,14 @@ public class PublisherController {
         return new Response("Manager id must be numeric", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
-      Manager manager = storage.getManager(managerIdLong);
+      IPersonStorage personStorage = Storage.getInstance();
+      Manager manager = personStorage.getManager(managerIdLong);
       if (manager == null) {
         return new Response("Manager not found", Status.NOT_FOUND);
       }
 
-      if (!storage.addPublisher(new Publisher(nit, name, address, manager))) {
+      IPublisherStorage publisherStorage = Storage.getInstance();
+      if (!publisherStorage.addPublisher(new Publisher(nit, name, address, manager))) {
         return new Response("A publisher with that NIT already exists", Status.BAD_REQUEST);
       }
       return new Response("Publisher created successfully", Status.CREATED);
@@ -58,7 +61,7 @@ public class PublisherController {
 
   public static Response getAllPublishers() {
     try {
-      Storage storage = Storage.getInstance();
+      IPublisherStorage storage = Storage.getInstance();
       ArrayList<Publisher> publishers = storage.getAllPublishers();
 
       ArrayList<Publisher> publishersCopy = new ArrayList<>();

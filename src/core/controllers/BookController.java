@@ -7,6 +7,9 @@ package core.controllers;
 import core.controllers.utils.Response;
 import core.controllers.utils.Status;
 import core.models.*;
+import core.models.storage.IBookStorage;
+import core.models.storage.IPersonStorage;
+import core.models.storage.IPublisherStorage;
 import core.models.storage.Storage;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -78,22 +81,24 @@ public class BookController {
         return new Response("Authors must not be repeated", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
+      IPersonStorage personStorage = Storage.getInstance();
       ArrayList<Author> authors = new ArrayList<>();
       for (Long authorId : authorIds) {
-        Author author = storage.getAuthor(authorId);
+        Author author = personStorage.getAuthor(authorId);
         if (author == null) {
           return new Response("Author with id " + authorId + " not found", Status.NOT_FOUND);
         }
         authors.add(author);
       }
 
-      Publisher publisher = storage.getPublisher(publisherNit.trim());
+      IPublisherStorage publisherStorage = Storage.getInstance();
+      Publisher publisher = publisherStorage.getPublisher(publisherNit.trim());
       if (publisher == null) {
         return new Response("Publisher not found", Status.NOT_FOUND);
       }
 
-      if (!storage
+      IBookStorage bookStorage = Storage.getInstance();
+      if (!bookStorage
           .addBook(new PrintedBook(title, authors, isbn, genre, format, valueDouble, publisher, pagesInt, copiesInt))) {
         return new Response("A book with that ISBN already exists", Status.BAD_REQUEST);
       }
@@ -141,17 +146,18 @@ public class BookController {
         return new Response("Authors must not be repeated", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
+      IPersonStorage personStorage = Storage.getInstance();
       ArrayList<Author> authors = new ArrayList<>();
       for (Long authorId : authorIds) {
-        Author author = storage.getAuthor(authorId);
+        Author author = personStorage.getAuthor(authorId);
         if (author == null) {
           return new Response("Author with id " + authorId + " not found", Status.NOT_FOUND);
         }
         authors.add(author);
       }
 
-      Publisher publisher = storage.getPublisher(publisherNit.trim());
+      IPublisherStorage publisherStorage = Storage.getInstance();
+      Publisher publisher = publisherStorage.getPublisher(publisherNit.trim());
       if (publisher == null) {
         return new Response("Publisher not found", Status.NOT_FOUND);
       }
@@ -163,7 +169,8 @@ public class BookController {
         book = new DigitalBook(title, authors, isbn, genre, format, valueDouble, publisher, hyperlink);
       }
 
-      if (!storage.addBook(book)) {
+      IBookStorage bookStorage = Storage.getInstance();
+      if (!bookStorage.addBook(book)) {
         return new Response("A book with that ISBN already exists", Status.BAD_REQUEST);
       }
       return new Response("Digital book created successfully", Status.CREATED);
@@ -227,27 +234,29 @@ public class BookController {
         return new Response("Authors must not be repeated", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
+      IPersonStorage personStorage = Storage.getInstance();
       ArrayList<Author> authors = new ArrayList<>();
       for (Long authorId : authorIds) {
-        Author author = storage.getAuthor(authorId);
+        Author author = personStorage.getAuthor(authorId);
         if (author == null) {
           return new Response("Author with id " + authorId + " not found", Status.NOT_FOUND);
         }
         authors.add(author);
       }
 
-      Publisher publisher = storage.getPublisher(publisherNit.trim());
+      IPublisherStorage publisherStorage = Storage.getInstance();
+      Publisher publisher = publisherStorage.getPublisher(publisherNit.trim());
       if (publisher == null) {
         return new Response("Publisher not found", Status.NOT_FOUND);
       }
 
-      Narrator narrator = storage.getNarrator(narratorIdLong);
+      Narrator narrator = personStorage.getNarrator(narratorIdLong);
       if (narrator == null) {
         return new Response("Narrator not found", Status.NOT_FOUND);
       }
 
-      if (!storage
+      IBookStorage bookStorage = Storage.getInstance();
+      if (!bookStorage
           .addBook(new Audiobook(title, authors, isbn, genre, format, valueDouble, publisher, durationInt, narrator))) {
         return new Response("A book with that ISBN already exists", Status.BAD_REQUEST);
       }
@@ -259,7 +268,7 @@ public class BookController {
 
   public static Response getAllBooks() {
     try {
-      Storage storage = Storage.getInstance();
+      IBookStorage storage = Storage.getInstance();
       ArrayList<Book> books = storage.getAllBooks();
 
       ArrayList<Book> booksCopy = new ArrayList<>();
@@ -286,13 +295,14 @@ public class BookController {
         return new Response("Author id must be numeric", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
-      Author author = storage.getAuthor(authorIdLong);
+      IPersonStorage personStorage = Storage.getInstance();
+      Author author = personStorage.getAuthor(authorIdLong);
       if (author == null) {
         return new Response("Author not found", Status.NOT_FOUND);
       }
 
-      ArrayList<Book> allBooks = storage.getAllBooks();
+      IBookStorage bookStorage = Storage.getInstance();
+      ArrayList<Book> allBooks = bookStorage.getAllBooks();
       ArrayList<Book> authorBooks = new ArrayList<>();
 
       for (Book book : allBooks) {
@@ -320,7 +330,7 @@ public class BookController {
         return new Response("Format must not be empty", Status.BAD_REQUEST);
       }
 
-      Storage storage = Storage.getInstance();
+      IBookStorage storage = Storage.getInstance();
       ArrayList<Book> allBooks = storage.getAllBooks();
       ArrayList<Book> formatBooks = new ArrayList<>();
 
@@ -335,6 +345,41 @@ public class BookController {
       }
 
       return new Response("Books by format retrieved successfully", Status.OK, formatBooks);
+    } catch (Exception ex) {
+      return new Response("Unexpected error", Status.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public static Response getBooksByType(String type) {
+    try {
+      if (type.trim().isEmpty()) {
+        return new Response("Type must not be empty", Status.BAD_REQUEST);
+      }
+
+      IBookStorage storage = Storage.getInstance();
+      ArrayList<Book> allBooks = storage.getAllBooks();
+      ArrayList<Book> typeBooks = new ArrayList<>();
+
+      for (Book book : allBooks) {
+        boolean match = false;
+        if (type.equalsIgnoreCase("PrintedBook") && book instanceof PrintedBook) {
+          match = true;
+        } else if (type.equalsIgnoreCase("DigitalBook") && book instanceof DigitalBook) {
+          match = true;
+        } else if (type.equalsIgnoreCase("Audiobook") && book instanceof Audiobook) {
+          match = true;
+        }
+
+        if (match) {
+          try {
+            typeBooks.add(book.clone());
+          } catch (CloneNotSupportedException ex) {
+            return new Response("Error cloning books", Status.INTERNAL_SERVER_ERROR);
+          }
+        }
+      }
+
+      return new Response("Books by type retrieved successfully", Status.OK, typeBooks);
     } catch (Exception ex) {
       return new Response("Unexpected error", Status.INTERNAL_SERVER_ERROR);
     }
